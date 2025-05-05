@@ -38,11 +38,48 @@ document.addEventListener('DOMContentLoaded', function() {
     viewDropdown.addEventListener('click', function(e) {
         e.preventDefault();
         viewDropdownMenu.classList.toggle('hidden');
-        
-        // Close dropdown when clicking on an item
-        if (e.target.closest('a')) {
+    });
+
+    // Handle view selection
+    viewDropdownItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            const view = this.getAttribute('data-view');
+            
+            // Update button text
+            viewText.textContent = `${view.charAt(0).toUpperCase() + view.slice(1)} View`;
+            
+            // Close dropdown
             viewDropdownMenu.classList.add('hidden');
-        }
+            
+            // Update content visibility
+            adminDashboard.classList.add('hidden');
+            coordinatorDashboard.classList.add('hidden');
+            patientDashboard.classList.add('hidden');
+            patientDirectory.classList.add('hidden');
+
+            switch(view) {
+                case 'admin':
+                    adminDashboard.classList.remove('hidden');
+                    break;
+                case 'coordinator':
+                    coordinatorDashboard.classList.remove('hidden');
+                    break;
+                case 'patient':
+                    patientDashboard.classList.remove('hidden');
+                    break;
+            }
+
+            // Update navigation visibility
+            const navLinks = document.querySelectorAll('nav a');
+            navLinks.forEach(link => {
+                if (link.id === 'dashboard-link') {
+                    link.style.display = 'flex';
+                } else {
+                    link.style.display = view === 'admin' || view === 'coordinator' ? 'flex' : 'none';
+                }
+            });
+        });
     });
 
     // Handle view selection
