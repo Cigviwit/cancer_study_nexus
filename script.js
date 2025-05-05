@@ -10,17 +10,42 @@ document.addEventListener('DOMContentLoaded', function() {
     const coordinatorDashboard = document.getElementById('coordinator-dashboard');
     const patientDashboard = document.getElementById('patient-dashboard');
     const patientDirectory = document.getElementById('patient-directory');
+    
+    // Add overlay for mobile
+    const createOverlay = () => {
+        const overlay = document.createElement('div');
+        overlay.id = 'mobile-overlay';
+        overlay.className = 'fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden';
+        document.body.appendChild(overlay);
+        
+        overlay.addEventListener('click', () => {
+            sidebar.setAttribute('data-drawer', 'closed');
+            overlay.classList.add('hidden');
+        });
+        
+        return overlay;
+    };
+    
+    const overlay = createOverlay();
 
     // Toggle sidebar on mobile
     sidebarToggle.addEventListener('click', function() {
         const isOpen = sidebar.getAttribute('data-drawer') === 'open';
         sidebar.setAttribute('data-drawer', isOpen ? 'closed' : 'open');
+        
+        // Toggle overlay
+        if (sidebar.getAttribute('data-drawer') === 'open') {
+            overlay.classList.remove('hidden');
+        } else {
+            overlay.classList.add('hidden');
+        }
     });
 
     // Close sidebar when clicking outside on mobile
     document.addEventListener('click', function(e) {
         if (window.innerWidth <= 768 && !sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
             sidebar.setAttribute('data-drawer', 'closed');
+            overlay.classList.add('hidden');
         }
     });
 
@@ -79,6 +104,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     link.style.display = view === 'admin' || view === 'coordinator' ? 'flex' : 'none';
                 }
             });
+            
+            // Close sidebar on mobile
+            if (window.innerWidth <= 768) {
+                sidebar.setAttribute('data-drawer', 'closed');
+                overlay.classList.add('hidden');
+            }
         });
     });
 
@@ -156,6 +187,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Close sidebar on mobile
             if (window.innerWidth <= 768) {
                 sidebar.setAttribute('data-drawer', 'closed');
+                overlay.classList.add('hidden');
             }
         });
 
@@ -189,6 +221,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Close sidebar on mobile
             if (window.innerWidth <= 768) {
                 sidebar.setAttribute('data-drawer', 'closed');
+                overlay.classList.add('hidden');
             }
         });
     });

@@ -20,10 +20,42 @@
 @media (max-width: 768px) {
     #sidebar {
         transform: translateX(-100%);
+        z-index: 40;
+        width: 80%;
+        max-width: 300px;
     }
 
     #sidebar[data-drawer="open"] {
         transform: translateX(0);
+        box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Overlay when sidebar is open */
+    #sidebar[data-drawer="open"]::after {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: -1;
+    }
+    
+    /* Adjust view dropdown for mobile */
+    #view-dropdown {
+        width: 100%;
+    }
+    
+    /* Adjust main content padding */
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    /* Make tables responsive */
+    .overflow-x-auto {
+        -webkit-overflow-scrolling: touch;
     }
 }
 
@@ -50,6 +82,20 @@
     transform: translateX(0);
     margin-top: 0.5rem;
     z-index: 50;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+/* Mobile dropdown improvements */
+@media (max-width: 768px) {
+    #view-dropdown-menu {
+        width: 90%;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    #view-dropdown-menu a {
+        padding: 0.75rem 1rem;
+    }
 }
 
 /* Alert priority colors */
