@@ -65,6 +65,25 @@ document.addEventListener('DOMContentLoaded', function() {
         viewDropdownMenu.classList.toggle('hidden');
     });
 
+    let currentView = 'admin'; // Add shared variable for current view
+
+    function showDashboard() {
+        adminDashboard.classList.add('hidden');
+        coordinatorDashboard.classList.add('hidden');
+        patientDashboard.classList.add('hidden');
+        switch(currentView) {
+            case 'admin':
+                adminDashboard.classList.remove('hidden');
+                break;
+            case 'coordinator':
+                coordinatorDashboard.classList.remove('hidden');
+                break;
+            case 'patient':
+                patientDashboard.classList.remove('hidden');
+                break;
+        }
+    }
+
     // Handle view selection
     viewDropdownItems.forEach(item => {
         item.addEventListener('click', function(e) {
@@ -77,31 +96,23 @@ document.addEventListener('DOMContentLoaded', function() {
             // Close dropdown
             viewDropdownMenu.classList.add('hidden');
             
-            // Update content visibility
-            adminDashboard.classList.add('hidden');
-            coordinatorDashboard.classList.add('hidden');
-            patientDashboard.classList.add('hidden');
-            patientDirectory.classList.add('hidden');
-
-            switch(view) {
-                case 'admin':
-                    adminDashboard.classList.remove('hidden');
-                    break;
-                case 'coordinator':
-                    coordinatorDashboard.classList.remove('hidden');
-                    break;
-                case 'patient':
-                    patientDashboard.classList.remove('hidden');
-                    break;
-            }
-
+            // Set current view and show dashboard
+            currentView = view;
+            showDashboard();
+            
             // Update navigation visibility
             const navLinks = document.querySelectorAll('nav a');
             navLinks.forEach(link => {
-                if (link.id === 'dashboard-link') {
-                    link.style.display = 'flex';
-                } else {
-                    link.style.display = view === 'admin' || view === 'coordinator' ? 'flex' : 'none';
+                switch (view) {
+                    case 'admin':
+                        link.style.display = 'flex'; // Show all links for admin
+                        break;
+                    case 'coordinator':
+                        link.style.display = (link.id === 'dashboard-link' || link.id === 'patients-link') ? 'flex' : 'none';
+                        break;
+                    case 'patient':
+                        link.style.display = link.id === 'dashboard-link' ? 'flex' : 'none';
+                        break;
                 }
             });
             
@@ -110,45 +121,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 sidebar.setAttribute('data-drawer', 'closed');
                 overlay.classList.add('hidden');
             }
-        });
-    });
-
-    // Handle view selection
-    viewDropdownItems.forEach(item => {
-        item.addEventListener('click', function(e) {
-            e.preventDefault();
-            const view = this.getAttribute('data-view');
-            
-            // Update button text
-            viewText.textContent = `${view.charAt(0).toUpperCase() + view.slice(1)} View`;
-            
-            // Update content visibility
-            adminDashboard.classList.add('hidden');
-            coordinatorDashboard.classList.add('hidden');
-            patientDashboard.classList.add('hidden');
-            patientDirectory.classList.add('hidden');
-
-            switch(view) {
-                case 'admin':
-                    adminDashboard.classList.remove('hidden');
-                    break;
-                case 'coordinator':
-                    coordinatorDashboard.classList.remove('hidden');
-                    break;
-                case 'patient':
-                    patientDashboard.classList.remove('hidden');
-                    break;
-            }
-
-            // Update navigation visibility
-            const navLinks = document.querySelectorAll('nav a');
-            navLinks.forEach(link => {
-                if (link.id === 'dashboard-link') {
-                    link.style.display = 'flex';
-                } else {
-                    link.style.display = view === 'admin' || view === 'coordinator' ? 'flex' : 'none';
-                }
-            });
         });
     });
 
@@ -159,61 +131,28 @@ document.addEventListener('DOMContentLoaded', function() {
         link.addEventListener('click', function(e) {
             e.preventDefault();
             
-            // Hide all content
+            // Hide all content and patient directory
             adminDashboard.classList.add('hidden');
             coordinatorDashboard.classList.add('hidden');
             patientDashboard.classList.add('hidden');
             patientDirectory.classList.add('hidden');
 
-            // Show appropriate content based on link
+            // Show appropriate content based on link and current view
             switch (this.getAttribute('href')) {
                 case '#dashboard':
-                    // Show admin dashboard by default
-                    adminDashboard.classList.remove('hidden');
+                    showDashboard();
                     break;
                 case '#patients':
-                    patientDirectory.classList.remove('hidden');
+                    if (currentView === 'admin' || currentView === 'coordinator') {
+                        patientDirectory.classList.remove('hidden');
+                    } else {
+                        alert('You do not have permission to view this section.');
+                    }
                     break;
                 case '#alerts':
-                    // Add alerts page functionality later
                     alert('Alerts page will be implemented in future stages');
                     break;
                 case '#sites':
-                    // Add sites page functionality later
-                    alert('Sites page will be implemented in future stages');
-                    break;
-            }
-
-            // Close sidebar on mobile
-            if (window.innerWidth <= 768) {
-                sidebar.setAttribute('data-drawer', 'closed');
-                overlay.classList.add('hidden');
-            }
-        });
-
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            // Hide all content
-            adminDashboard.classList.add('hidden');
-            patientDashboard.classList.add('hidden');
-            patientDirectory.classList.add('hidden');
-
-            // Show appropriate content based on link
-            switch (this.getAttribute('href')) {
-                case '#dashboard':
-                    // Show admin dashboard by default
-                    adminDashboard.classList.remove('hidden');
-                    break;
-                case '#patients':
-                    patientDirectory.classList.remove('hidden');
-                    break;
-                case '#alerts':
-                    // Add alerts page functionality later
-                    alert('Alerts page will be implemented in future stages');
-                    break;
-                case '#sites':
-                    // Add sites page functionality later
                     alert('Sites page will be implemented in future stages');
                     break;
             }
@@ -227,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Initialize with dashboard view
-    adminDashboard.classList.remove('hidden');
+    showDashboard();
 
     // Search functionality
     const searchInput = document.getElementById('patient-search');
